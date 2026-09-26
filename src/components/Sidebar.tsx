@@ -201,7 +201,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Bottom Footer Actions */}
       <div className="p-4 border-t border-slate-800/80 space-y-2">
         <div className="p-2.5 rounded-lg bg-slate-800/50 text-[11px] text-slate-400 leading-relaxed border border-slate-800">
-          <span className="text-slate-300 font-semibold">SIH 2026 Prototype</span>
+          <span className="text-slate-300 font-semibold">ASTELLA_vp</span>
           <p className="mt-0.5 text-slate-400">MoSPI Closed-Loop Training Architecture</p>
         </div>
 
