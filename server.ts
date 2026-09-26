@@ -16,7 +16,9 @@ const isProduction = process.env.NODE_ENV === 'production';
 app.use(express.json({ limit: '10mb' }));
 
 // Initialize Gemini AI Client
-const apiKey = process.env.GEMINI_API_KEY;
+const apiKey = process.env.GEMINI_API_KEY
+  ? process.env.GEMINI_API_KEY.replace(/^["']|["']$/g, '').trim()
+  : '';
 let aiClient: GoogleGenAI | null = null;
 if (apiKey) {
   aiClient = new GoogleGenAI({

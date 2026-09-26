@@ -112,6 +112,27 @@ export interface TraineeRecord {
   status: 'On Track' | 'Needs Attention' | 'Certified';
 }
 
+export interface UserCourseProgress {
+  userId: string;
+  courseId: string;
+  completedModules: number[];
+  progressPercent: number;
+  isCompleted: boolean;
+  lastAccessed: string;
+}
+
+export interface AssessmentResultRecord {
+  id: string;
+  userId: string;
+  assessmentId: string;
+  assessmentTitle: string;
+  targetSkill: string;
+  score: number;
+  passed: boolean;
+  completedAt: string;
+  answers?: Record<number, string>;
+}
+
 export interface NotificationItem {
   id: string;
   title: string;
@@ -119,4 +140,5 @@ export interface NotificationItem {
   time: string;
   type: 'achievement' | 'alert' | 'quiz' | 'schedule';
   read: boolean;
+  createdAt?: string;
 }

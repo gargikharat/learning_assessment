@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with role-based access information and summary stats",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "description": "Official email address" },
+        "name": { "type": "string", "description": "Full name" },
+        "role": { "type": "string", "enum": ["learner", "admin"], "description": "Access control role" },
+        "designation": { "type": "string", "description": "Official designation" },
+        "department": { "type": "string", "description": "Department or Division" },
+        "cadre": { "type": "string", "description": "Cadre such as SSS or ISS" },
+        "employeeId": { "type": "string", "description": "Government Employee ID" },
+        "overallProgress": { "type": "number", "description": "Overall learning progress percentage (0-100)" },
+        "skillsImprovedCount": { "type": "number", "description": "Count of improved skills" },
+        "completedCoursesCount": { "type": "number", "description": "Count of completed courses" },
+        "averageQuizScore": { "type": "number", "description": "Average assessment score" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "email", "name", "role"]
+    },
+    "Course": {
+      "title": "Course Module",
+      "description": "Training course from iGOT Karmayogi or NSSTA",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Course identifier" },
+        "title": { "type": "string", "description": "Course title" },
+        "source": { "type": "string", "enum": ["iGOT", "NSSTA"], "description": "Course provider" },
+        "category": { "type": "string", "description": "Discipline category" },
+        "duration": { "type": "string", "description": "Duration string" },
+        "level": { "type": "string", "description": "Skill level" },
+        "impact": { "type": "string", "description": "Competency impact summary" },
+        "description": { "type": "string", "description": "Course description" },
+        "modulesCount": { "type": "number", "description": "Number of syllabus modules" },
+        "rating": { "type": "number", "description": "Average rating" },
+        "learnersEnrolled": { "type": "number", "description": "Total enrollments" }
+      },
+      "required": ["id", "title", "source", "category"]
+    },
+    "UserCourseProgress": {
+      "title": "User Course Progress",
+      "description": "Tracks learner progress on enrolled courses",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Learner UID" },
+        "courseId": { "type": "string", "description": "Associated course ID" },
+        "progressPercent": { "type": "number", "description": "Progress percentage (0-100)" },
+        "isCompleted": { "type": "boolean", "description": "Completion flag" },
+        "lastAccessed": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["userId", "courseId", "progressPercent"]
+    },
+    "Assessment": {
+      "title": "Assessment Test",
+      "description": "Competency evaluation or generated quiz",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Assessment ID" },
+        "title": { "type": "string", "description": "Assessment title" },
+        "targetSkill": { "type": "string", "description": "Target competency assessed" },
+        "category": { "type": "string", "description": "Category" },
+        "difficulty": { "type": "string", "description": "Difficulty level" },
+        "durationMinutes": { "type": "number", "description": "Allotted time" },
+        "passingScorePercent": { "type": "number", "description": "Passing threshold" },
+        "sourceManual": { "type": "string", "description": "Source reference manual" },
+        "createdBy": { "type": "string", "description": "Author tag" }
+      },
+      "required": ["id", "title", "targetSkill", "category"]
+    },
+    "AssessmentResult": {
+      "title": "Assessment Result",
+      "description": "Record of a submitted assessment attempt",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Result ID" },
+        "userId": { "type": "string", "description": "Learner UID" },
+        "assessmentId": { "type": "string", "description": "Assessment ID" },
+        "assessmentTitle": { "type": "string", "description": "Title of the assessment" },
+        "targetSkill": { "type": "string", "description": "Skill assessed" },
+        "score": { "type": "number", "description": "Score percentage" },
+        "passed": { "type": "boolean", "description": "Pass status" },
+        "completedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "userId", "assessmentId", "score", "passed"]
+    },
+    "Notification": {
+      "title": "User Notification",
+      "description": "Alert or announcement for a specific user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Notification ID" },
+        "userId": { "type": "string", "description": "Recipient UID" },
+        "title": { "type": "string", "description": "Notification title" },
+        "message": { "type": "string", "description": "Notification body" },
+        "time": { "type": "string", "description": "Formatted time or ISO timestamp" },
+        "type": { "type": "string", "description": "achievement | alert | quiz | schedule" },
+        "read": { "type": "boolean", "description": "Read flag" }
+      },
+      "required": ["id", "userId", "title", "message", "read"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles with role and stats"
+    },
+    "/courses/{courseId}": {
+      "schema": { "$ref": "#/entities/Course" },
+      "description": "Catalog of training courses from iGOT and NSSTA"
+    },
+    "/users/{userId}/courseProgress/{courseId}": {
+      "schema": { "$ref": "#/entities/UserCourseProgress" },
+      "description": "Individual learner course module progress"
+    },
+    "/assessments/{assessmentId}": {
+      "schema": { "$ref": "#/entities/Assessment" },
+      "description": "Official competency assessments and generated quizzes"
+    },
+    "/users/{userId}/assessmentResults/{resultId}": {
+      "schema": { "$ref": "#/entities/AssessmentResult" },
+      "description": "Historical assessment attempts and scores by user"
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "Personal alerts and announcements for learner"
+    }
+  }
+}

@@ -13,6 +13,7 @@ import {
   Building2,
   BookOpen,
   ArrowRightLeft,
+  User,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -150,6 +151,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span className="flex-1 text-left">Assessments & Certs</span>
               <span className="w-2 h-2 rounded-full bg-blue-400" />
             </button>
+
+            <button
+              onClick={() => onNavigate('profile')}
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
+                currentView === 'profile'
+                  ? 'bg-blue-600 text-white font-semibold shadow-xs'
+                  : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+              }`}
+            >
+              <User className="w-4 h-4 shrink-0" />
+              <span>Officer Profile</span>
+            </button>
           </>
         ) : (
           <>
@@ -194,6 +207,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Users className="w-4 h-4 shrink-0" />
               <span>Cadre Trainee Roster</span>
             </button>
+
+            <button
+              onClick={() => onNavigate('profile')}
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
+                currentView === 'profile'
+                  ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+                  : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+              }`}
+            >
+              <User className="w-4 h-4 shrink-0" />
+              <span>Admin Profile</span>
+            </button>
           </>
         )}
       </nav>
@@ -202,7 +227,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-4 border-t border-slate-800/80 space-y-2">
         <div className="p-2.5 rounded-lg bg-slate-800/50 text-[11px] text-slate-400 leading-relaxed border border-slate-800">
           <span className="text-slate-300 font-semibold">ASTELLA_vp</span>
-          <p className="mt-0.5 text-slate-400">MoSPI Closed-Loop Training Architecture</p>
         </div>
 
         <button

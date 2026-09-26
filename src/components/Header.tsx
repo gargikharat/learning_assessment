@@ -18,6 +18,8 @@ interface HeaderProps {
   onSwitchRole: () => void;
   onOpenNotifications: () => void;
   activeView: string;
+  onNavigate?: (view: string) => void;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,6 +28,8 @@ export const Header: React.FC<HeaderProps> = ({
   onSwitchRole,
   onOpenNotifications,
   activeView,
+  onNavigate,
+  onLogout,
 }) => {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -39,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
     'admin-dashboard': 'Organization Capacity Overview',
     'quiz-generator': 'AI Assessment Generator',
     trainees: 'Cadre Trainee Roster',
+    profile: 'Officer Account & Security',
   };
 
   return (
@@ -59,21 +64,23 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right: Actions, Notifications, Role Switch, Profile */}
       <div className="flex items-center space-x-4">
-        {/* Switch Role Quick Button */}
-        <button
-          onClick={onSwitchRole}
-          className="hidden sm:inline-flex items-center space-x-2 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors"
-          title="Switch between Learner and Admin demonstration views"
-        >
-          <ArrowRightLeft className="w-3.5 h-3.5 text-blue-600" />
-          <span>Switch to {user.role === 'learner' ? 'Admin' : 'Learner'}</span>
-        </button>
+        {/* Switch Role Quick Button (Admins only to preview Learner view) */}
+        {user.role === 'admin' && (
+          <button
+            onClick={onSwitchRole}
+            className="hidden sm:inline-flex items-center space-x-2 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+            title="Switch between Admin and Learner preview"
+          >
+            <ArrowRightLeft className="w-3.5 h-3.5 text-blue-600" />
+            <span>Switch to {activeView.startsWith('admin') || activeView === 'trainees' ? 'Learner View' : 'Admin View'}</span>
+          </button>
+        )}
 
         {/* Notifications */}
         <div className="relative">
           <button
             onClick={onOpenNotifications}
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors relative"
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors relative cursor-pointer"
             aria-label="View notifications"
           >
             <Bell className="w-5 h-5" />
@@ -89,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative">
           <button
             onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-            className="flex items-center space-x-3 text-left pl-3 border-l border-slate-200 hover:opacity-90 transition-opacity"
+            className="flex items-center space-x-3 text-left pl-3 border-l border-slate-200 hover:opacity-90 transition-opacity cursor-pointer"
           >
             <div className="hidden md:block text-right">
               <div className="text-xs font-bold text-slate-900 leading-tight">{user.name}</div>
@@ -103,7 +110,17 @@ export const Header: React.FC<HeaderProps> = ({
                     : 'bg-indigo-700 ring-2 ring-indigo-100'
                 }`}
               >
-                {user.role === 'learner' ? 'AS' : 'RV'}
+                {user.name
+                  ? user.name
+                      .split(' ')
+                      .filter(Boolean)
+                      .map((n) => n[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase()
+                  : user.role === 'admin'
+                  ? 'AD'
+                  : 'SO'}
               </div>
               <span
                 className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
@@ -140,20 +157,47 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-100 px-2">
-                <button
-                  onClick={() => {
-                    setProfileDropdownOpen(false);
-                    onSwitchRole();
-                  }}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
-                >
-                  <span className="flex items-center space-x-2">
-                    <ArrowRightLeft className="w-3.5 h-3.5" />
-                    <span>Switch to {user.role === 'learner' ? 'Admin Portal' : 'Learner Portal'}</span>
-                  </span>
-                  <span className="text-[10px] bg-blue-100 px-1.5 py-0.5 rounded font-semibold">SIH Demo</span>
-                </button>
+              <div className="pt-2 border-t border-slate-100 px-2 space-y-1">
+                {onNavigate && (
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      onNavigate('profile');
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <span>Profile & Account Settings</span>
+                    <span className="text-[10px] text-slate-400">Security</span>
+                  </button>
+                )}
+
+                {user.role === 'admin' && (
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      onSwitchRole();
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-blue-700 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <span className="flex items-center space-x-2">
+                      <ArrowRightLeft className="w-3.5 h-3.5" />
+                      <span>{activeView.startsWith('admin') || activeView === 'trainees' ? 'Switch to Learner View' : 'Switch to Admin View'}</span>
+                    </span>
+                    <span className="text-[10px] bg-blue-100 px-1.5 py-0.5 rounded font-semibold">Preview</span>
+                  </button>
+                )}
+
+                {onLogout && (
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      onLogout();
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <span>Sign Out</span>
+                  </button>
+                )}
               </div>
             </div>
           )}
