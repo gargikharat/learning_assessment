@@ -1,0 +1,6 @@
+{
+  "name": "SkillSet AI - Government Learning & Training Platform",
+  "description": "AI-powered skill gap analysis, personalized learning pathways with iGOT Karmayogi and NSSTA integration, and dynamic assessment generation for official statistics civil servants.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
